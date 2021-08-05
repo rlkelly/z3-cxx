@@ -81,8 +81,8 @@ fn build_z3() {
 
 fn main() {
     build_z3();
-
     cxx_build::bridge("src/lib.rs")
+        .include("z3.h")
         .flag_if_supported("-std=c++17")
         .compile("z3_cxx");
 
