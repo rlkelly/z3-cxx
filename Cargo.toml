@@ -1,5 +1,5 @@
 [package]
-name = "z3-cxx"
+name = "z3_cxx"
 version = "0.1.0"
 authors = ["rob kelly <robert.l.kelly3@gmail.com>"]
 edition = "2018"
@@ -9,3 +9,4 @@ cxx = "1.0.50"
 
 [build-dependencies]
 cxx-build = "1.0"
+cmake = "0.1"

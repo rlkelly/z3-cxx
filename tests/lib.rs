@@ -1,8 +1,7 @@
-extern crate z3cxx2;
+extern crate z3_cxx;
 
-use std::ffi::{CStr, CString};
-use z3cxx2::ffi::{
-    _Z3_config,
+use z3_cxx::ffi::{
+    // _Z3_config,
     Z3_mk_config,
 };
 
