@@ -1,3 +1,5 @@
+#![allow(non_camel_case_types)]
+
 mod enums;
 mod generated;
 
@@ -29,6 +31,11 @@ unsafe impl ExternType for DeclKind {
 
 unsafe impl ExternType for ErrorCode {
     type Id = type_id!("Z3_error_code");
+    type Kind = cxx::kind::Trivial;
+}
+
+unsafe impl ExternType for GoalPrec {
+    type Id = type_id!("Z3_goal_prec");
     type Kind = cxx::kind::Trivial;
 }
 
@@ -111,6 +118,7 @@ pub mod ffi {
         type Z3_ast_print_mode = crate::AstPrintMode;
         type Z3_param_kind = crate::ParamKind;
         type Z3_decl_kind = crate::DeclKind;
+        type Z3_goal_prec = crate::GoalPrec;
 
         pub fn Z3_mk_config() -> *mut _Z3_config;
         pub fn Z3_global_param_reset_all();
@@ -143,12 +151,101 @@ pub mod ffi {
         pub unsafe fn Z3_params_set_symbol(c: *mut _Z3_context, p: *mut _Z3_params, k: *mut _Z3_symbol, v: *mut _Z3_symbol);
         pub unsafe fn Z3_params_to_string(c: *mut _Z3_context, p: *mut _Z3_params) -> *const c_char;
         pub unsafe fn Z3_tactic_apply_ex(c: *mut _Z3_context, t: *mut _Z3_tactic, g: *mut _Z3_goal, p: *mut _Z3_params) -> *mut _Z3_apply_result;
+        pub unsafe fn Z3_tactic_apply(c: *mut _Z3_context, t: *mut _Z3_tactic, g: *mut _Z3_goal) -> *mut _Z3_apply_result;
+        pub unsafe fn Z3_tactic_fail_if(c: *mut _Z3_context, p: *mut _Z3_probe) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_cond(c: *mut _Z3_context, p: *mut _Z3_probe, t1: *mut _Z3_tactic, t2: *mut _Z3_tactic) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_when(c: *mut _Z3_context, p: *mut _Z3_probe, t: *mut _Z3_tactic) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_or_else(c: *mut _Z3_context, t1: *mut _Z3_tactic, t2: *mut _Z3_tactic) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_and_then(c: *mut _Z3_context, t1: *mut _Z3_tactic, t2: *mut _Z3_tactic) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_repeat(c: *mut _Z3_context, t: *mut _Z3_tactic, max: u32) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_fail(c: *mut _Z3_context) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_tactic_skip(c: *mut _Z3_context) -> *mut _Z3_tactic;
+        pub unsafe fn Z3_get_tactic_name(c: *mut _Z3_context, i: u32) -> *const c_char;
+
+        pub unsafe fn Z3_get_probe_name(c: *mut _Z3_context, i: u32) -> *const c_char;
+        pub unsafe fn Z3_probe_dec_ref(c: *mut _Z3_context, p: *mut _Z3_probe);
+        pub unsafe fn Z3_probe_inc_ref(c: *mut _Z3_context, p: *mut _Z3_probe);
+        pub unsafe fn Z3_probe_not(x: *mut _Z3_context, p: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_eq(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_or(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_and(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_ge(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_le(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_gt(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_lt(x: *mut _Z3_context, p1: *mut _Z3_probe, p2: *mut _Z3_probe) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_const(x: *mut _Z3_context, val: f64) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_apply(c: *mut _Z3_context, p: *mut _Z3_probe, g: *mut _Z3_goal) -> f64;
+        pub unsafe fn Z3_mk_probe(c: *mut _Z3_context, name: *const c_char) -> *mut _Z3_probe;
+        pub unsafe fn Z3_probe_get_descr(c: *mut _Z3_context, name: *const c_char) -> *const c_char;
+        pub unsafe fn Z3_get_num_probes(c: *mut _Z3_context) -> u32;
+
+
+
+
+        pub unsafe fn Z3_get_num_tactics(c: *mut _Z3_context) -> u32;
+        pub unsafe fn Z3_goal_inc_ref(c: *mut _Z3_context, g: *mut _Z3_goal);
+        pub unsafe fn Z3_goal_dec_ref(c: *mut _Z3_context, g: *mut _Z3_goal);
+        pub unsafe fn Z3_apply_result_get_subgoal(c: *mut _Z3_context, r: *mut _Z3_apply_result, i: u32) -> *mut _Z3_goal;
+        pub unsafe fn Z3_apply_result_get_num_subgoals(c: *mut _Z3_context, r: *mut _Z3_apply_result) -> u32;
+        pub unsafe fn Z3_goal_to_string(c: *mut _Z3_context, g: *mut _Z3_goal) -> *const c_char;
+        pub unsafe fn Z3_goal_formula(c: *mut _Z3_context, g: *mut _Z3_goal, idx: u32) -> *mut _Z3_ast;
+        pub unsafe fn Z3_goal_precision(c: *mut _Z3_context, g: *mut _Z3_goal) -> Z3_goal_prec;
+        pub unsafe fn Z3_goal_translate(source: *mut _Z3_context, g: *mut _Z3_goal, target: *mut _Z3_context) -> *mut _Z3_goal;
+        pub unsafe fn Z3_goal_reset(c: *mut _Z3_context, g: *mut _Z3_goal);
+        pub unsafe fn Z3_goal_is_decided_sat(c: *mut _Z3_context, g: *mut _Z3_goal) -> bool;
+        pub unsafe fn Z3_goal_is_decided_unsat(c: *mut _Z3_context, g: *mut _Z3_goal) -> bool;
+        pub unsafe fn Z3_mk_goal(c: *mut _Z3_context, models: bool, unsat_cores: bool, proofs: bool) -> *mut _Z3_goal;
+        pub unsafe fn Z3_goal_assert(c: *mut _Z3_context, g: *mut _Z3_goal, a: *mut _Z3_ast);
+        pub unsafe fn Z3_goal_inconsistent(c: *mut _Z3_context, g: *mut _Z3_goal) -> bool;
+        pub unsafe fn Z3_goal_depth(c: *mut _Z3_context, g: *mut _Z3_goal) -> u32;
+        pub unsafe fn Z3_goal_size(c: *mut _Z3_context, g: *mut _Z3_goal) -> u32;
+        pub unsafe fn Z3_goal_num_exprs(c: *mut _Z3_context, g: *mut _Z3_goal) -> u32;
+
+        pub unsafe fn Z3_mk_constructor_list(c: *mut _Z3_context,
+            num_constructors: u32,
+            constructors: *const *mut _Z3_constructor
+        ) -> *mut _Z3_constructor_list;
+
+        pub unsafe fn Z3_del_constructor_list(c: *mut _Z3_context, clist: *mut _Z3_constructor_list);
+        pub unsafe fn Z3_del_constructor(c: *mut _Z3_context, constr: *mut _Z3_constructor);
+        pub unsafe fn Z3_get_datatype_sort_constructor_accessor(c: *mut _Z3_context,
+            t: *mut _Z3_sort,
+            _Z3_func_decl: u32,
+            idx_a: u32) -> *mut _Z3_func_decl;
+        pub unsafe fn Z3_get_datatype_sort_recognizer(
+            c: *mut _Z3_context, t: *mut _Z3_sort, idx: u32
+        ) -> *mut _Z3_func_decl;
+        pub unsafe fn Z3_get_datatype_sort_constructor(
+            c: *mut _Z3_context, t: *mut _Z3_sort, idx: u32
+        ) -> *mut _Z3_func_decl;
+        pub unsafe fn Z3_mk_constructor(c: *mut _Z3_context,
+            name: *mut _Z3_symbol,
+            recognizer: *mut _Z3_symbol,
+            num_fields: u32,
+            field_names: *const *mut _Z3_symbol,
+            sorts: *const *mut _Z3_sort,
+            sort_refs: *mut u32,
+        ) -> *mut _Z3_constructor;
+        pub unsafe fn Z3_mk_datatypes(c: *mut _Z3_context,
+            num_sorts: u32,
+            sort_names: *const *mut _Z3_symbol,
+            sorts: *mut *mut _Z3_sort,
+            constructor_lists: *mut *mut _Z3_constructor_list);
+
+
+
+
 
         pub unsafe fn Z3_mk_string_symbol(
             c: *mut _Z3_context,
             s: *const c_char,
         ) -> *mut _Z3_symbol;
-        pub unsafe fn Z3_mk_int_sort(c: *mut _Z3_context) -> *mut _Z3_sort;
+        pub unsafe fn Z3_sort_to_ast(c: *mut _Z3_context, s: *mut _Z3_sort) -> *mut _Z3_ast;
+        pub unsafe fn Z3_is_eq_sort(c: *mut _Z3_context, s1: *mut _Z3_sort, s2: *mut _Z3_sort) -> bool;
+        pub unsafe fn Z3_sort_to_string(c: *mut _Z3_context, s: *mut _Z3_sort) -> *const c_char;
+        pub unsafe fn Z3_get_array_sort_range(c: *mut _Z3_context, s: *mut _Z3_sort) -> *mut _Z3_sort;
+        pub unsafe fn Z3_get_array_sort_domain(c: *mut _Z3_context, t: *mut _Z3_sort) -> *mut _Z3_sort;
+
         pub unsafe fn Z3_mk_const(
             c: *mut _Z3_context,
             s: *mut _Z3_symbol,
@@ -227,11 +324,33 @@ pub mod ffi {
         pub unsafe fn Z3_solver_assert(
             c: *mut _Z3_context, s: *mut _Z3_solver, a: *mut _Z3_ast);
         pub unsafe fn Z3_solver_check(c: *mut _Z3_context, s: *mut _Z3_solver) -> Z3_lbool;
+        pub unsafe fn Z3_solver_dec_ref(c: *mut _Z3_context, s: *mut _Z3_solver);
+        pub unsafe fn Z3_solver_inc_ref(c: *mut _Z3_context, s: *mut _Z3_solver);
+        pub unsafe fn Z3_solver_to_string(c: *mut _Z3_context, s: *mut _Z3_solver) -> *const c_char;
+        pub unsafe fn Z3_solver_set_params(c: *mut _Z3_context, s: *mut _Z3_solver, p: *mut _Z3_params);
+        pub unsafe fn Z3_solver_get_reason_unknown(c: *mut _Z3_context, s: *mut _Z3_solver) -> *const c_char;
+        pub unsafe fn Z3_solver_get_proof(c: *mut _Z3_context, s: *mut _Z3_solver) -> *mut _Z3_ast;
+        pub unsafe fn Z3_solver_pop(c: *mut _Z3_context, s: *mut _Z3_solver, n: u32);
+        pub unsafe fn Z3_solver_push(c: *mut _Z3_context, s: *mut _Z3_solver);
+        pub unsafe fn Z3_solver_get_unsat_core(c: *mut _Z3_context, s: *mut _Z3_solver) -> *mut _Z3_ast_vector;
+        pub unsafe fn Z3_solver_check_assumptions(c: *mut _Z3_context, s: *mut _Z3_solver,
+            num_assumptions: u32, assumptions: *const * mut _Z3_ast) -> Z3_lbool;
+        pub unsafe fn Z3_solver_reset(c: *mut _Z3_context, s: *mut _Z3_solver);
+        pub unsafe fn Z3_solver_assert_and_track(c: *mut _Z3_context, s: *mut _Z3_solver, a: *mut _Z3_ast, p: *mut _Z3_ast);
+        pub unsafe fn Z3_solver_translate(source: *mut _Z3_context, s: *mut _Z3_solver, target: *mut _Z3_context) -> *mut _Z3_solver;
+        pub unsafe fn Z3_mk_solver(c: *mut _Z3_context) -> *mut _Z3_solver;
+        pub unsafe fn Z3_pattern_to_string(c: *mut _Z3_context, p: *mut _Z3_pattern) -> *const c_char;
+        pub unsafe fn Z3_mk_pattern(c: *mut _Z3_context, num_patterns: u32, terms: *const *mut _Z3_ast) -> *mut _Z3_pattern;
+
+
+
+
         pub unsafe fn Z3_solver_get_model(c: *mut _Z3_context, s: *mut _Z3_solver) -> *mut _Z3_model;
         pub unsafe fn Z3_model_to_string(c: *mut _Z3_context, m: *mut _Z3_model) -> *mut c_char;
         pub unsafe fn Z3_ast_to_string(c: *mut _Z3_context, a: *mut _Z3_ast) -> *mut c_char;
         pub unsafe fn Z3_is_eq_ast(c: *mut _Z3_context, t1: *mut _Z3_ast, t2: *mut _Z3_ast) -> bool;
         pub unsafe fn Z3_get_ast_hash(c: *mut _Z3_context, a: *mut _Z3_ast) -> u32;
+        pub unsafe fn Z3_get_ast_id(c: *mut _Z3_context, t: *mut _Z3_ast) -> u32;
 
         pub unsafe fn Z3_get_ast_kind(c: *mut _Z3_context, a: *mut _Z3_ast) -> Z3_ast_kind;
 
@@ -244,6 +363,18 @@ pub mod ffi {
         ) -> bool;
 
         pub unsafe fn Z3_get_numeral_int(c: *mut _Z3_context, v: *mut _Z3_ast, i: *mut i32) -> bool;
+        pub unsafe fn Z3_get_symbol_int(c: *mut _Z3_context, s: *mut _Z3_symbol) -> i32;
+        pub unsafe fn Z3_get_symbol_string(c: *mut _Z3_context, s: *mut _Z3_symbol) -> *const c_char;
+        pub unsafe fn Z3_get_symbol_kind(c: *mut _Z3_context, s: *mut _Z3_symbol) -> Z3_symbol_kind;
+        pub unsafe fn Z3_get_decl_name(c: *mut _Z3_context, d: *mut _Z3_func_decl) -> *mut _Z3_symbol;
+        pub unsafe fn Z3_get_decl_kind(c: *mut _Z3_context, d: *mut _Z3_func_decl) -> Z3_decl_kind;
+        pub unsafe fn Z3_mk_app(
+            c: *mut _Z3_context,
+            d: *mut _Z3_func_decl,
+            num_args: u32,
+            args: *const *mut _Z3_ast) -> *mut _Z3_ast;
+        pub unsafe fn Z3_get_arity(c: *mut _Z3_context, d: *mut _Z3_func_decl) -> u32;
+
         pub unsafe fn Z3_get_numeral_small(c: *mut _Z3_context, v: *mut _Z3_ast, num: *mut i64, den: *mut i64) -> bool;
         pub unsafe fn Z3_mk_mod(c: *mut _Z3_context, arg1: *mut _Z3_ast, arg2: *mut _Z3_ast) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_rem(c: *mut _Z3_context, arg1: *mut _Z3_ast, arg2: *mut _Z3_ast) -> *mut _Z3_ast;
@@ -263,8 +394,29 @@ pub mod ffi {
             patterns: *const *mut _Z3_pattern,
             body: *mut _Z3_ast
         ) -> *mut _Z3_ast;
-        pub unsafe fn Z3_get_array_sort_range(c: *mut _Z3_context, t: *mut _Z3_sort) -> *mut _Z3_sort;
         pub unsafe fn Z3_get_sort_kind(c: *mut _Z3_context, t: *mut _Z3_sort) -> Z3_sort_kind;
+        pub unsafe fn Z3_mk_enumeration_sort(c: *mut _Z3_context,
+            name: *mut _Z3_symbol,
+            n: u32,
+            enum_names: *const *mut _Z3_symbol,
+            enum_consts: *mut *mut _Z3_func_decl,
+            enum_testers: *mut *mut _Z3_func_decl) -> *mut _Z3_sort;
+
+        pub unsafe fn Z3_mk_bool_sort(c: *mut _Z3_context) -> *mut _Z3_sort;
+        pub unsafe fn Z3_mk_int_sort(c: *mut _Z3_context) -> *mut _Z3_sort;
+        pub unsafe fn Z3_mk_real_sort(c: *mut _Z3_context) -> *mut _Z3_sort;
+        pub unsafe fn Z3_mk_string_sort(c: *mut _Z3_context) -> *mut _Z3_sort;
+
+        pub unsafe fn Z3_mk_set_sort(c: *mut _Z3_context, ty: *mut _Z3_sort) -> *mut _Z3_sort;
+        pub unsafe fn Z3_mk_array_sort(c: *mut _Z3_context, domain: *mut _Z3_sort, range: *mut _Z3_sort) -> *mut _Z3_sort;
+        pub unsafe fn Z3_mk_bv_sort(c: *mut _Z3_context, sz: u32) -> *mut _Z3_sort;
+        pub unsafe fn Z3_mk_uninterpreted_sort(c: *mut _Z3_context, s: *mut _Z3_symbol) -> *mut _Z3_sort;
+
+        pub unsafe fn Z3_apply_result_dec_ref(c: *mut _Z3_context, r: *mut _Z3_apply_result);
+        pub unsafe fn Z3_apply_result_inc_ref(c: *mut _Z3_context, r: *mut _Z3_apply_result);
+
+
+
         pub unsafe fn Z3_mk_set_difference(c: *mut _Z3_context, arg1: *mut _Z3_ast, arg2: *mut _Z3_ast) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_set_subset(c: *mut _Z3_context, arg1: *mut _Z3_ast, arg2: *mut _Z3_ast) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_set_complement(c: *mut _Z3_context, arg1: *mut _Z3_ast) -> *mut _Z3_ast;
@@ -327,7 +479,6 @@ pub mod ffi {
         pub unsafe fn Z3_mk_string(c: *mut _Z3_context, s: *const c_char) -> *mut _Z3_ast;
         pub unsafe fn Z3_get_string(c: *mut _Z3_context, s: *mut _Z3_ast) -> *mut c_char;
         pub unsafe fn Z3_func_decl_to_string(c: *mut _Z3_context, d: *mut _Z3_func_decl) -> *mut c_char;
-        pub unsafe fn Z3_func_decl_to_ast(c: *mut _Z3_context, f: *mut _Z3_func_decl) -> *mut c_char;
 
         pub unsafe fn Z3_get_bv_sort_size(c: *mut _Z3_context, t: *mut _Z3_sort) -> u32;
         pub unsafe fn Z3_get_numeral_int64(c: *mut _Z3_context, v: *mut _Z3_ast, i: *mut i64) -> bool;
@@ -339,13 +490,39 @@ pub mod ffi {
 
 
         pub unsafe fn Z3_get_app_decl(c: *mut _Z3_context, a: *mut _Z3_app) -> *mut _Z3_func_decl;
+        pub unsafe fn Z3_func_decl_to_ast(c: *mut _Z3_context, f: *mut _Z3_func_decl) -> *mut _Z3_ast;
 
         pub unsafe fn Z3_mk_tactic(c: *mut _Z3_context, name: *const c_char) -> *mut _Z3_tactic;
         pub unsafe fn Z3_tactic_dec_ref(c: *mut _Z3_context, g: *mut _Z3_tactic);
         pub unsafe fn Z3_tactic_inc_ref(c: *mut _Z3_context, g: *mut _Z3_tactic);
         pub unsafe fn Z3_tactic_get_help(c: *mut _Z3_context, t: *mut _Z3_tactic) -> *const c_char;
 
+        pub unsafe fn Z3_model_dec_ref(c: *mut _Z3_context, m: *mut _Z3_model);
+        pub unsafe fn Z3_model_inc_ref(c: *mut _Z3_context, m: *mut _Z3_model);
+        pub unsafe fn Z3_model_translate(c: *mut _Z3_context, m: *mut _Z3_model, dst: *mut _Z3_context) -> *mut _Z3_model;
 
+        // z3_optimization.h
+        pub unsafe fn Z3_mk_optimize(c: *mut _Z3_context) -> *mut _Z3_optimize;
+        pub unsafe fn Z3_optimize_get_reason_unknown(c: *mut _Z3_context, d: *mut _Z3_optimize) -> *const c_char;
+        pub unsafe fn Z3_optimize_to_string(c: *mut _Z3_context, o: *mut _Z3_optimize) -> *const c_char;
+        pub unsafe fn Z3_optimize_dec_ref(c: *mut _Z3_context, d: *mut _Z3_optimize);
+        pub unsafe fn Z3_optimize_inc_ref(c: *mut _Z3_context, d: *mut _Z3_optimize);
+        pub unsafe fn Z3_optimize_get_objectives(c: *mut _Z3_context, o: *mut _Z3_optimize) -> *mut _Z3_ast_vector;
+        pub unsafe fn Z3_optimize_check(c: *mut _Z3_context, o: *mut _Z3_optimize, num_assumptions: u32, assumptions: *const *mut _Z3_ast) -> Z3_lbool;
+        pub unsafe fn Z3_optimize_pop(c: *mut _Z3_context, d: *mut _Z3_optimize);
+        pub unsafe fn Z3_optimize_push(c: *mut _Z3_context, d: *mut _Z3_optimize);
+        pub unsafe fn Z3_optimize_minimize(c: *mut _Z3_context, o: *mut _Z3_optimize, t: *mut _Z3_ast) -> u32;
+        pub unsafe fn Z3_optimize_maximize(c: *mut _Z3_context, o: *mut _Z3_optimize, t: *mut _Z3_ast) -> u32;
+        pub unsafe fn Z3_optimize_assert_soft(c: *mut _Z3_context, o: *mut _Z3_optimize, a: *mut _Z3_ast, weight: *const c_char, id: *mut _Z3_symbol) -> u32;
+        pub unsafe fn Z3_optimize_assert(c: *mut _Z3_context, o: *mut _Z3_optimize, a: *mut _Z3_ast);
+        pub unsafe fn Z3_optimize_get_model(c: *mut _Z3_context, o: *mut _Z3_optimize) -> *mut _Z3_model;
+
+
+        // z3_ast_containers.h
+        pub unsafe fn Z3_ast_vector_get(c: *mut _Z3_context, v: *mut _Z3_ast_vector, i: u32) -> *mut _Z3_ast;
+        pub unsafe fn Z3_ast_vector_size(c: *mut _Z3_context, v: *mut _Z3_ast_vector) -> u32;
+
+        // z3_
         pub unsafe fn Z3_mk_fpa_numeral_float(c: *mut _Z3_context, v: f32, ty: *mut _Z3_sort) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_fpa_numeral_double(c: *mut _Z3_context, v: f64, ty: *mut _Z3_sort) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_fpa_div(c: *mut _Z3_context, rm: *mut _Z3_ast, t1: *mut _Z3_ast, t2: *mut _Z3_ast) -> *mut _Z3_ast;
@@ -360,6 +537,9 @@ pub mod ffi {
         pub unsafe fn Z3_mk_fpa_round_toward_positive(c: *mut _Z3_context) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_fpa_round_toward_negative(c: *mut _Z3_context) -> *mut _Z3_ast;
         pub unsafe fn Z3_mk_fpa_round_toward_zero(c: *mut _Z3_context) -> *mut _Z3_ast;
+        pub unsafe fn Z3_fpa_get_sbits(c: *mut _Z3_context, s: *mut _Z3_sort) -> u32;
+        pub unsafe fn Z3_fpa_get_ebits(c: *mut _Z3_context, s: *mut _Z3_sort) -> u32;
+        pub unsafe fn Z3_mk_fpa_sort(c: *mut _Z3_context, ebits: u32, sbits: u32) -> *mut _Z3_sort;
     }
 }
 
@@ -380,3 +560,5 @@ pub type Z3_optimize = *mut ffi::_Z3_optimize;
 pub type Z3_model = *mut ffi::_Z3_model;
 pub type Z3_solver = *mut ffi::_Z3_solver;
 pub type Z3_sort = *mut ffi::_Z3_sort;
+pub type Z3_constructor = *mut ffi::_Z3_constructor;
+pub type Z3_constructor_list = *mut ffi::_Z3_constructor_list;

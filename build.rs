@@ -84,6 +84,8 @@ fn main() {
     cxx_build::bridge("src/lib.rs")
         .include("z3.h")
         .include("z3_fpa.h")
+        .include("z3_optimization.h")
+        .include("z3_ast_containers.h")
         .flag_if_supported("-std=c++17")
         .compile("z3_cxx");
 
