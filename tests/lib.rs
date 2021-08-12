@@ -1,5 +1,7 @@
 extern crate z3_cxx;
 
+mod ast;
+
 use std::ffi::{CStr, CString};
 
 use z3_cxx::ffi::{
@@ -28,7 +30,7 @@ use z3_cxx::{
     Z3_config,
     Z3_context,
     Z3_ast,
-    Z3_L_TRUE,
+    Z3_lbool,
     Z3_TRUE,
 };
 
@@ -53,7 +55,7 @@ fn smoketest() {
 
         let solver = Z3_mk_simple_solver(ctx);
         Z3_solver_assert(ctx, solver, gt);
-        assert_eq!(Z3_solver_check(ctx, solver), Z3_L_TRUE);
+        assert_eq!(Z3_solver_check(ctx, solver), Z3_lbool::Z3_L_TRUE);
 
         let model = Z3_solver_get_model(ctx, solver);
 
